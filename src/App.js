@@ -22,7 +22,7 @@ const Auth = () => {
       <Switch>
         {/* <Route path="/" component={landing} /> */}
         <Route path="/landing" component={landing} />
-        {/* <Route path="/" component={Login} />  */}
+        <Route path="/" component={Login} /> 
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/forgot-password" component={Forgot} /> 
