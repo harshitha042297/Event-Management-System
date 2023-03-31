@@ -6,8 +6,9 @@ import axios from "axios";
 import { useNavigate} from "react-router";
 import Navbar from "./Navbar";
 // import { Navbar } from "./components/views/Navbar";
-
-// import REACT_APP_SITE_KEY from "././site_key";
+import {FacebookLoginButton} from "react-social-login-buttons";
+import {InstagramLoginButton} from "react-social-login-buttons";
+import {GoogleLoginButton} from "react-social-login-buttons";
 
 const Login = () => {
   
@@ -81,6 +82,9 @@ const Login = () => {
         if (response?.status === 200 && response?.data.email) {
           sessionStorage.setItem('userDetails',JSON.stringify(response.data));
           navigate.push("/Events");
+        }
+        else {
+          alert("invalid credentials")
         }
       });
   };
@@ -259,6 +263,11 @@ const Login = () => {
               </form>
 
               <hr />
+              <div>
+                {/* <FacebookLoginButton style={{height:"35px"}} onClick={() => alert("Hello")}/> */}
+                <GoogleLoginButton style={{height:"35px"}} onClick={() => alert("Hello")} />
+                {/* <InstagramLoginButton style={{height:"35px"}} onClick={() => alert("Hello")} /> */}
+              </div>
               <div className="auth-option text-center pt-2">
                 No Account?{" "}
                 <Link className="text-link" to="/register">

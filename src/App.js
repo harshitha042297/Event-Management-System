@@ -13,6 +13,7 @@ import Reservations from "./components/views/Reservations";
 import UploadActivity from "./components/views/UploadActivity";
 import Players from "./components/views/Players";
 import Activity from "./components/views/Activity";
+import AdminReservations from "./components/views/AdminReservations";
 // import ChatEng from "./components/views/ChatEng";
 
 const Auth = () => {
@@ -22,7 +23,6 @@ const Auth = () => {
       <Switch>
         {/* <Route path="/" component={landing} /> */}
         <Route path="/landing" component={landing} />
-        <Route path="/" component={Login} /> 
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/forgot-password" component={Forgot} /> 
@@ -33,7 +33,8 @@ const Auth = () => {
         <Route path="/UploadActivity" component={UploadActivity} /> 
         <Route path="/Players" component={Players} /> 
         <Route path="/Activity" component={Activity} /> 
-
+        <Route path="/AdminReservations" component={AdminReservations} /> 
+        <Route path="/" component={landing} /> 
       </Switch>
     </Router>
   );

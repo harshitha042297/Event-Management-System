@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import EventsNavbar from "./EventsNavbar";
 import CheckboxLand from "./CheckboxLand";
+import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 
 function UploadProduct(props) {
@@ -20,6 +21,7 @@ function UploadProduct(props) {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const venueOwner=JSON.parse(sessionStorage.getItem("userDetails")).venue_Owner
+  const navigate = useHistory();
 
   const onTitleChange = (event) => {
     setTitleValue(event.currentTarget.value);
@@ -81,6 +83,7 @@ function UploadProduct(props) {
   axios.post("https://se-event-management.azurewebsites.net/Event/create", variables)
       .then(response => {
           alert("success")
+          navigate.push("/Events");
       })
   };
 

@@ -8,6 +8,8 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 // import Container from "react-bootstrap/Container";
 import CheckboxLand from "./CheckboxLand";
+import { useNavigate} from "react-router";
+import { Link, useHistory } from "react-router-dom";
 import "../../styles.css";
 import ChatEng from "./ChatEng";
 
@@ -15,7 +17,7 @@ function Events() {
   const [Events, setEvents] = useState([]);
   const isAdmin = JSON.parse(sessionStorage.getItem("userDetails")).venue_Owner;
   const details = JSON.parse(sessionStorage.getItem("userDetails"));
-
+  const navigate = useHistory();
   // console.log(isAdmin,sessionStorage.getItem("userDetails"),"isAdmin")
   useEffect(() => {
     axios
@@ -49,6 +51,42 @@ function Events() {
         });
     
   };
+  const submitBookmark = (event) => {
+    axios
+        .post(
+          "https://se-event-management.azurewebsites.net/bookmarks/create",
+          {
+            userID: details.userID,
+            EventID: event.eventID,
+          }
+        )
+
+        .then((response) => {
+          if (response?.status === 200) {
+            console.log(response)
+            alert("bookmarked successfully");
+            navigate.push("/Events");
+          }
+        });
+    
+  };
+  const submitDelete = (event) => {
+    axios
+        .post(
+          "https://se-event-management.azurewebsites.net/event/delete",
+          {
+            EventID: event.eventID,
+          }
+        )
+
+        .then((response) => {
+          if (response?.status === 200) {
+            alert("Deleted event");
+            navigate.push("/Events");
+          }
+        });
+   
+  }
 
   return (
     <>
@@ -94,6 +132,20 @@ function Events() {
                     <Card.Text>Address:{event.eventAddress}</Card.Text>
                     <Card.Text>Occupied:{event.occupied}</Card.Text>
                     <Card.Text>Capacity:{event.capacity}</Card.Text>
+                    <Button
+                    onClick={() => submitBookmark(event)}
+                    variant="primary"
+                  >
+                    BOOKMARK
+                  </Button>
+                  
+                  <Button
+                    onClick={() => submitDelete(event)}
+                    variant="primary"
+                  >
+                    DELETE
+                  </Button>
+
                   </Card.Body>
                   <Button
                     onClick={() => submitReservation(event)}
@@ -106,9 +158,9 @@ function Events() {
             ))}
         </Row>
       </div>
-      {/* <div> */}
-      {/* <ChatEng /> */}
-      {/* </div> */}
+      <div> 
+      <ChatEng />
+      </div>
     </>
   );
 }

@@ -23,9 +23,10 @@ const EventsNavbar = ({isAdmin}) => {
             <li>
               <NavLink to="/Activity">Activities</NavLink>
             </li>
+            { !isAdmin&&
             <li>
               <NavLink to="/Players">Players</NavLink>
-            </li>
+            </li>}
             { isAdmin&&
             <li>
               <NavLink to="/UploadProduct">Upload Events</NavLink>
@@ -36,6 +37,10 @@ const EventsNavbar = ({isAdmin}) => {
             { !isAdmin&&
             <li>
               <NavLink to="/Reservations">Reservations</NavLink>
+            </li>}
+            { isAdmin&&
+            <li>
+              <NavLink to="/AdminReservations">E Reservations</NavLink>
             </li>}
             <li>
               <NavLink to="/UserProfile">Profile</NavLink>

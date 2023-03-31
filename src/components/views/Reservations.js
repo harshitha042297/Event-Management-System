@@ -39,9 +39,9 @@ function Reservations() {
   }, []);
   useEffect(() => {
     console.log(bookingDetails, "testing bookingDetails");
-
     // console.log(sampledata,"sampledata")
   }, [bookingDetails]);
+
 
   return (
     <>
@@ -51,10 +51,7 @@ function Reservations() {
         <FullCalendar 
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
-          // eventContent={renderEventContent}
-          // views={["dayGridMonth", "dayGridWeek", "dayGridDay"]}
           events={bookingDetails}
-          // event={bookingDetails}
         />
       </div>
     </>
