@@ -14,6 +14,8 @@ import UploadActivity from "./components/views/UploadActivity";
 import Players from "./components/views/Players";
 import Activity from "./components/views/Activity";
 import AdminReservations from "./components/views/AdminReservations";
+import ChatEng from "./components/views/ChatEng";
+
 // import ChatEng from "./components/views/ChatEng";
 
 const Auth = () => {
@@ -34,6 +36,7 @@ const Auth = () => {
         <Route path="/Players" component={Players} /> 
         <Route path="/Activity" component={Activity} /> 
         <Route path="/AdminReservations" component={AdminReservations} /> 
+        <Route path="/Chat" component={ChatEng} /> 
         <Route path="/" component={landing} /> 
       </Switch>
     </Router>

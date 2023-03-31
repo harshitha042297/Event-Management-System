@@ -12,6 +12,7 @@ import { useNavigate} from "react-router";
 import { Link, useHistory } from "react-router-dom";
 import "../../styles.css";
 import ChatEng from "./ChatEng";
+import ChatNav from "./ChatNav";
 
 function Events() {
   const [Events, setEvents] = useState([]);
@@ -158,9 +159,10 @@ function Events() {
             ))}
         </Row>
       </div>
-      <div> 
+      {/* <div> 
       <ChatEng />
-      </div>
+      </div> */}
+      <ChatNav />
     </>
   );
 }

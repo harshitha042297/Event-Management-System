@@ -45,6 +45,9 @@ const EventsNavbar = ({isAdmin}) => {
             <li>
               <NavLink to="/UserProfile">Profile</NavLink>
             </li>
+            {/* <li>
+              <NavLink to="/Chat">Chat</NavLink>
+            </li> */}
             <li>
               <NavLink to="/Landing">Logout</NavLink>
             </li>
