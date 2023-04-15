@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Link,useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import Form from "../../utilities/Forms";
 import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 import userEvent from "@testing-library/user-event";
-import { useNavigate} from "react-router";
+import { useNavigate } from "react-router";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -14,6 +14,8 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [validate, setValidate] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [UserDescription, setUserDescription] = useState("");
+  const [Age, setAge] = useState("");
 
   const navigate = useHistory();
 
@@ -25,12 +27,12 @@ const Register = () => {
         value: name,
         isRequired: true,
       },
-      lastname:{
-        value:lastname,
+      lastname: {
+        value: lastname,
         isRequired: true,
       },
-      username:{
-        value:username,
+      username: {
+        value: username,
         isRequired: true,
       },
       email: {
@@ -67,25 +69,28 @@ const Register = () => {
       setUsername("");
       setEmail("");
       setPassword("");
+      setAge("");
+      setUserDescription("");
       alert("Successfully Register User");
     }
 
     axios
-    .post("https://se-event-management.azurewebsites.net/User/create", {
-      Email: email,
-      Password: password,
-      FirstName: name,
-      LastName: lastname,
-      UserName: username,
-    })
-    // .then((data) => data)
-    .then((response) => {
-      console.log(response, "api response post");
-      // if (response?.status === 200 && response?.data) {
-      //   navigate.push("/landing");
-      // }
-    });
-
+      .post("https://se-event-management.azurewebsites.net/User/create", {
+        Email: email,
+        Password: password,
+        FirstName: name,
+        LastName: lastname,
+        UserName: username,
+        Age: Age,
+        UserDescription: UserDescription,
+      })
+      // .then((data) => data)
+      .then((response) => {
+        console.log(response, "api response post");
+        // if (response?.status === 200 && response?.data) {
+        //   navigate.push("/landing");
+        // }
+      });
   };
 
   const togglePassword = (e) => {
@@ -158,7 +163,7 @@ const Register = () => {
                     placeholder="Username"
                     onChange={(e) => setUsername(e.target.value)}
                   />
-
+                  <br></br>
                   <div
                     className={`invalid-feedback text-start ${
                       validate.validate && validate.validate.name
@@ -182,6 +187,31 @@ const Register = () => {
                       ? validate.validate.name[0]
                       : ""}
                   </div>
+
+                  <div>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="Age"
+                        name="Age"
+                        value={Age}
+                        placeholder="Enter your age"
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                      <br></br>
+                    </div>
+
+                    <div>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="UserDescription"
+                        name="UserDescription"
+                        value={UserDescription}
+                        placeholder="Brief description about your interests"
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </div>
 
                 </div>
 
@@ -252,6 +282,8 @@ const Register = () => {
                         ? validate.validate.password[0]
                         : ""}
                     </div>
+                    <br></br>
+                   
                   </div>
                 </div>
                 <div className="text-center">

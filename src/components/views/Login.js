@@ -3,15 +3,18 @@ import { Link, useHistory } from "react-router-dom";
 import Form from "../../utilities/Forms";
 import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
-import { useNavigate} from "react-router";
+import { useNavigate } from "react-router";
 import Navbar from "./Navbar";
 // import { Navbar } from "./components/views/Navbar";
-import {FacebookLoginButton} from "react-social-login-buttons";
-import {InstagramLoginButton} from "react-social-login-buttons";
-import {GoogleLoginButton} from "react-social-login-buttons";
+import { FacebookLoginButton } from "react-social-login-buttons";
+import { InstagramLoginButton } from "react-social-login-buttons";
+import { GoogleLoginButton } from "react-social-login-buttons";
+import { GoogleLogin } from "react-google-login";
+import { gapi } from "gapi-script";
+const client_id =
+  "299065018954-6o458210krpn4slslu8g10j6p1pbphcl.apps.googleusercontent.com";
 
 const Login = () => {
-  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -32,6 +35,16 @@ const Login = () => {
       // .then((data) => data.json())
       .then((response) => console.log(response, "api response"));
   }, []);
+
+  useEffect(() => {
+    function start() {
+      gapi.auth2.init({
+        clientId: "299065018954-6o458210krpn4slslu8g10j6p1pbphcl.apps.googleusercontent.com",
+        scope: "",
+      });
+    }
+    gapi.load("client:auth2", start);
+  });
 
   const validateLogin = () => {
     let isValid = true;
@@ -80,11 +93,10 @@ const Login = () => {
         sessionStorage.clear();
         console.log(response, "api response post");
         if (response?.status === 200 && response?.data.email) {
-          sessionStorage.setItem('userDetails',JSON.stringify(response.data));
+          sessionStorage.setItem("userDetails", JSON.stringify(response.data));
           navigate.push("/Events");
-        }
-        else {
-          alert("invalid credentials")
+        } else {
+          alert("invalid credentials");
         }
       });
   };
@@ -137,148 +149,186 @@ const Login = () => {
     }
   };
 
+  //oAuth
+  const onSuccess = (res) => {
+    console.log("login success", res.profileObj);
+    axios
+      .post("https://se-event-management.azurewebsites.net/user/check", {
+        Email: email,
+        Password: password,
+      })
+      // .then((data) => data)
+      .then((response) => {
+        sessionStorage.clear();
+        console.log(response, "api response post");
+        if (response?.status === 200 && response?.data.email) {
+          sessionStorage.setItem("userDetails", JSON.stringify(response.data));
+          navigate.push("/Events");
+        } 
+        // else {
+        //   alert("Error");
+        // }
+      });
+  };
+  const onFailure = (res) => {
+    console.log("login fail", res);
+  };
+
+  //Oauth
+
   return (
     <div>
       <Navbar />
-    <div className="row g-0 auth-wrapper">
-      <div className="col-12 col-md-12 col-lg-12 auth-main-col text-center">
-        <div className="d-flex flex-column align-content-end">
-          <div className="auth-body mx-auto">
-            <p>Login to your account</p>
-            <div className="auth-form-container text-start">
-              <form
-                className="auth-form"
-                method="POST"
-                onSubmit={authenticate}
-                autoComplete={"off"}
-              >
-                <div className="email mb-3">
-                  <input
-                    type="email"
-                    className={`form-control ${
-                      validate.validate && validate.validate.email
-                        ? "is-invalid "
-                        : ""
-                    }`}
-                    id="email"
-                    name="email"
-                    value={email}
-                    placeholder="Email"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-
-                  <div
-                    className={`invalid-feedback text-start ${
-                      validate.validate && validate.validate.email
-                        ? "d-block"
-                        : "d-none"
-                    }`}
-                  >
-                    {validate.validate && validate.validate.email
-                      ? validate.validate.email[0]
-                      : ""}
-                  </div>
-                </div>
-
-                <div className="password mb-3">
-                  <div className="input-group">
+      <div className="row g-0 auth-wrapper">
+        <div className="col-12 col-md-12 col-lg-12 auth-main-col text-center">
+          <div className="d-flex flex-column align-content-end">
+            <div className="auth-body mx-auto">
+              <p>Login to your account</p>
+              <div className="auth-form-container text-start">
+                <form
+                  className="auth-form"
+                  method="POST"
+                  onSubmit={authenticate}
+                  autoComplete={"off"}
+                >
+                  <div className="email mb-3">
                     <input
-                      type={showPassword ? "text" : "password"}
+                      type="email"
                       className={`form-control ${
-                        validate.validate && validate.validate.password
+                        validate.validate && validate.validate.email
                           ? "is-invalid "
                           : ""
                       }`}
-                      name="password"
-                      id="password"
-                      value={password}
-                      placeholder="Password"
-                      onChange={(e) => setPassword(e.target.value)}
+                      id="email"
+                      name="email"
+                      value={email}
+                      placeholder="Email"
+                      onChange={(e) => setEmail(e.target.value)}
                     />
-
-                    <button
-                      type="button"
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={(e) => togglePassword(e)}
-                    >
-                      <i
-                        className={
-                          showPassword ? "far fa-eye" : "far fa-eye-slash"
-                        }
-                      ></i>{" "}
-                    </button>
 
                     <div
                       className={`invalid-feedback text-start ${
-                        validate.validate && validate.validate.password
+                        validate.validate && validate.validate.email
                           ? "d-block"
                           : "d-none"
                       }`}
                     >
-                      {validate.validate && validate.validate.password
-                        ? validate.validate.password[0]
+                      {validate.validate && validate.validate.email
+                        ? validate.validate.email[0]
                         : ""}
                     </div>
                   </div>
-                  <br />
-                  <div className="formGroup">
-                    <ReCAPTCHA
-                      sitekey="6LffFXEkAAAAAAuTtmg_OKXkC7MI07-50OyeoBdb"
-                      ref={captchaRef}
-                      onChange={onRecaptchaChange}
-                    />
-                  </div>
 
-                  <div className="extra mt-3 row justify-content-between">
-                    <div className="col-6">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id="remember"
-                          checked={remember}
-                          onChange={(e) => setRemember(e.currentTarget.checked)}
-                        />
-                        <label className="form-check-label" htmlFor="remember">
-                          Remember me
-                        </label>
+                  <div className="password mb-3">
+                    <div className="input-group">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        className={`form-control ${
+                          validate.validate && validate.validate.password
+                            ? "is-invalid "
+                            : ""
+                        }`}
+                        name="password"
+                        id="password"
+                        value={password}
+                        placeholder="Password"
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={(e) => togglePassword(e)}
+                      >
+                        <i
+                          className={
+                            showPassword ? "far fa-eye" : "far fa-eye-slash"
+                          }
+                        ></i>{" "}
+                      </button>
+
+                      <div
+                        className={`invalid-feedback text-start ${
+                          validate.validate && validate.validate.password
+                            ? "d-block"
+                            : "d-none"
+                        }`}
+                      >
+                        {validate.validate && validate.validate.password
+                          ? validate.validate.password[0]
+                          : ""}
                       </div>
                     </div>
-                    <div className="col-6">
-                      <div className="forgot-password text-end">
-                        <Link to="/forgot-password">Forgot password?</Link>
+                    <br />
+                    <div className="formGroup">
+                      <ReCAPTCHA
+                        sitekey="6LffFXEkAAAAAAuTtmg_OKXkC7MI07-50OyeoBdb"
+                        ref={captchaRef}
+                        onChange={onRecaptchaChange}
+                      />
+                    </div>
+
+                    <div className="extra mt-3 row justify-content-between">
+                      <div className="col-6">
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="remember"
+                            checked={remember}
+                            onChange={(e) =>
+                              setRemember(e.currentTarget.checked)
+                            }
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="remember"
+                          >
+                            Remember me
+                          </label>
+                        </div>
+                      </div>
+                      <div className="col-6">
+                        <div className="forgot-password text-end">
+                          <Link to="/forgot-password">Forgot password?</Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <button
-                    // onClick={login}
-                    type="submit"
-                    className="btn btn-primary w-100 theme-btn mx-auto"
-                  >
-                    Log In
-                  </button>
-                </div>
-              </form>
+                  <div className="text-center">
+                    <button
+                      // onClick={login}
+                      type="submit"
+                      className="btn btn-primary w-100 theme-btn mx-auto"
+                    >
+                      Log In
+                    </button>
+                  </div>
+                </form>
 
-              <hr />
-              <div>
-                {/* <FacebookLoginButton style={{height:"35px"}} onClick={() => alert("Hello")}/> */}
-                <GoogleLoginButton style={{height:"35px"}} onClick={() => alert("Hello")} />
-                {/* <InstagramLoginButton style={{height:"35px"}} onClick={() => alert("Hello")} /> */}
-              </div>
-              <div className="auth-option text-center pt-2">
-                No Account?{" "}
-                <Link className="text-link" to="/register">
-                  Sign up{" "}
-                </Link>
+                <hr />
+                <div>
+                  <GoogleLogin
+                    clientId="299065018954-6o458210krpn4slslu8g10j6p1pbphcl.apps.googleusercontent.com"
+                    buttonText="Login using Google Accont"
+                    onSuccess={onSuccess}
+                    onFailure={onFailure}
+                    // cookiePolicy={"single_host_origin"}
+                    isSignedIn={true}
+                  />
+                </div>
+
+                <div className="auth-option text-center pt-2">
+                  No Account?{" "}
+                  <Link className="text-link" to="/register">
+                    Sign up{" "}
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };
