@@ -15,6 +15,7 @@ function Activity() {
   const [venueName, setVenueName] = useState("");
   const [cityName, setCityName] = useState("");
   const [stateName, setStateName] = useState("");
+  
 
   useEffect(() => {
     axios
@@ -51,13 +52,35 @@ function Activity() {
     temp = filterByValue(copyEvents, cityName, "activityCity");
     temp = filterByValue(temp, stateName, "activityState");
     temp = filterByValue(temp, venueName, "activityName");
+    
     setActivity(temp);
     console.log(venueName, cityName, stateName, temp);
   };
 
   const clearEvent = () => {
     setActivity(copyEvents);
+    setCityName("")
+    setStateName("")
+    setVenueName("")
+   
   };
+
+  const bookActivity=(event)=>{
+    // axios
+    // .post("https://se-event-management.azurewebsites.net/booking/bookevent", {
+    //   userID: details.userID,
+    //   Email: details.email,
+    //   FirstName: details.firstName,
+    //   EventID: event.eventID,
+    // })
+
+    // .then((response) => {
+    //   if (response?.status === 200) {
+    //     alert("Successfull booking");
+    //   }
+    // });
+    alert("test")
+  }
 
   return (
     <>
@@ -86,6 +109,7 @@ function Activity() {
             onChange={(e) => handleVenue(e)}
           ></input>
         </div>
+
 
         <div
           className="form-outline"
@@ -146,7 +170,7 @@ function Activity() {
                     <Card.Text>State: {event.activityState}</Card.Text>
                     <Card.Text>Address:{event.activityAddress}</Card.Text>
                   </Card.Body>
-                  <Button variant="primary">BOOK</Button>
+                  <Button onClick={() => bookActivity(event)} variant="primary">BOOK</Button>
                 </Card>
               </Col>
             ))}

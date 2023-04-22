@@ -14,10 +14,12 @@ function Players() {
   const [copyPlayers, setCopyPlayers] = useState([]);
   const [invite,setInvite]=useState("");
   const isAdmin = JSON.parse(sessionStorage.getItem("userDetails")).venue_Owner;
+  const userDetails=JSON.parse(sessionStorage.getItem("userDetails"));
   
   const [gender, setGender] = useState("");
   const [interests, setInterests] = useState("");
   const [skill, setSkill] = useState("");
+  const [activityName,setActivityName] = useState("");
   
   useEffect(() => {
     axios
@@ -41,10 +43,27 @@ function Players() {
     setSkill(e.target.value);
   };
 
+  const handleActivity=(e)=>{
+    setActivityName(e.target.value);
+  }
+
   const submitInvite = (user) => {
-    console.log(user);
-    alert("testing invite")
+    axios
+      .post("https://se-event-management.azurewebsites.net/Invite",{
+       userID: (userDetails.userID),
+          frndID2: (user.userID),
+          message: invite
+      })
+      // .then((data) => data.json())
+      // .then((response) => console.log(response, "api response"));
+      .then((response) => {
+        // setPlayers(response?.data);
+        // setCopyPlayers(response?.data);
+        console.log(response);
+      });
+    alert("Invite sent succesfully")
   };
+
   const inviteFunction = (e) => {
     setInvite(e.target.value);
   };
@@ -63,12 +82,17 @@ function Players() {
     temp = filterByValue(copyPlayers, skill, "userDescription");
     temp = filterByValue(temp, interests, "userDescription");
     temp = filterByValue(temp, gender, "gender");
+    temp = filterByValue(temp, activityName,"userDescription");
     setPlayers(temp);
-    console.log(skill, interests, gender, temp);
+    console.log(skill, interests, gender, activityName, temp);
   };
 
   const clearEvent = () => {
     setPlayers(copyPlayers);
+    setSkill("")
+    setInterests("")
+    setGender("")
+    setActivityName("")
   };
 
   return (
@@ -89,7 +113,7 @@ function Players() {
       <div style={{ display: "flex" }} className="row">
         <div
           className="form-outline"
-          style={{ width: "300px", marginLeft: "130px", marginBottom: "25px" }}
+          style={{ width: "200px", marginLeft: "130px", marginBottom: "25px" }}
         >
           <input
             class="form-control"
@@ -101,7 +125,19 @@ function Players() {
 
         <div
           className="form-outline"
-          style={{ width: "300px", marginLeft: "15px", marginBottom: "25px" }}
+          style={{ width: "200px", marginLeft: "60px", marginBottom: "25px" }}
+        >
+          <input
+            class="form-control"
+            placeholder="Search by activity"
+            value={activityName}
+            onChange={(e) => handleActivity(e)}
+          ></input>
+        </div>
+
+        <div
+          className="form-outline"
+          style={{ width: "200px", marginLeft: "35px", marginBottom: "25px" }}
         >
           <input
             class="form-control"
@@ -113,7 +149,7 @@ function Players() {
 
         <div
           className="form-outline"
-          style={{ width: "300px", marginLeft: "15px", marginBottom: "25px" }}
+          style={{ width: "200px", marginLeft: "35px", marginBottom: "25px" }}
         >
           <input
             class="form-control"
@@ -150,7 +186,7 @@ function Players() {
               <Col style={{ marginBottom: "32px" }}>
                 <Card style={{ width: "18rem" }}>
                   <Card.Body
-                    style={{ maxHeight: "200px", overflowY: "scroll" }}
+                    style={{ maxHeight: "200px", overflowY: "scroll",backgroundColor:"ghostwhite" }}
                   >
                     <Card.Title styles={{ className: "userdisplay" }}>
                       {user.firstName}

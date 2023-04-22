@@ -13,6 +13,7 @@ import { Link, useHistory } from "react-router-dom";
 import "../../styles.css";
 import ChatEng from "./ChatEng";
 import ChatNav from "./ChatNav";
+// import MapComp from "./MapComp";
 
 function Events() {
   const [Events, setEvents] = useState([]);
@@ -28,6 +29,10 @@ function Events() {
   const [venueName, setVenueName] = useState("");
   const [cityName, setCityName] = useState("");
   const [stateName, setStateName] = useState("");
+  const [sportName, setSportName] = useState("");
+  const [mapState, setMapState]= useState(false);
+  const [cancle,setCancle]=useState(false)
+  const [cancledEvents,setCancledEvents]=useState([]);
 
   const navigate = useHistory();
   // console.log(isAdmin,sessionStorage.getItem("userDetails"),"isAdmin")
@@ -44,8 +49,7 @@ function Events() {
   }, []);
 
   const submitReservation = (event) => {
-    // if booking == capacity throw error otherwise call
-
+    
     axios
       .post("https://se-event-management.azurewebsites.net/booking/bookevent", {
         userID: details.userID,
@@ -57,8 +61,19 @@ function Events() {
       .then((response) => {
         if (response?.status === 200) {
           alert("Successfull booking");
+          axios
+          .get("https://se-event-management.azurewebsites.net/Event")
+          // .then((data) => data.json())
+          // .then((response) => console.log(response, "api response"));
+          .then((response) => {
+            setEvents(response?.data);
+            setCopyEvents(response?.data);
+            console.log(response);
+          });
         }
       });
+
+      
   };
   const submitBookmark = (event) => {
     axios
@@ -99,7 +114,10 @@ function Events() {
     setStateName(e.target.value);
   };
 
-  
+  const handleSport = (e) => {
+    setSportName(e.target.value);
+  };
+
   function filterByValue(array, value, field) {
     return array.filter(
       (data) =>
@@ -114,14 +132,50 @@ function Events() {
     temp = filterByValue(copyEvents, cityName, "eventCity");
     temp = filterByValue(temp, stateName, "eventState");
     temp = filterByValue(temp, venueName, "eventDescription");
+    temp = filterByValue(temp, sportName, "eventSportName");
     setEvents(temp);
-    console.log(venueName, cityName, stateName, temp);
+    console.log(venueName, cityName, stateName, sportName, temp);
   };
 
   const clearEvent = () => {
     setEvents(copyEvents);
+    setCityName("");
+    setStateName("");
+    setVenueName("");
+    setSportName("");
   };
 
+  
+  const cancleEvent =(ceid) => {
+    axios
+    .post(
+      "https://se-event-management.azurewebsites.net/CancelBooking/create",
+      {
+        eventID: ceid
+      }
+    )
+    .then((response) => {
+      axios
+      .post("https://se-event-management.azurewebsites.net/CancelBooking", {
+        EventID: ceid
+      })
+      .then((response) => {
+        if (response?.status === 200) {
+          console.log(response)
+          setCancledEvents(response?.data)
+          setCancle(true)
+          alert("Successfully cancled event");
+        }
+      });
+      console.log(response);
+    });
+   
+  }
+//   const [address, setAddress] =useState("")
+//   const openMap = (address) => {
+//     setAddress(address)
+// setMapState(true)
+//   }
   return (
     <>
       <EventsNavbar isAdmin={isAdmin} />
@@ -137,54 +191,71 @@ function Events() {
         <h2>ALL EVENTS</h2>
       </div>
 
-      <div style={{ display: "flex" }} className="row">
-        <div
-          className="form-outline"
-          style={{ width: "300px", marginLeft: "37px", marginBottom: "25px" }}
-        >
-          <input
-            class="form-control"
-            placeholder="Search by venue"
-            value={venueName}
-            onChange={(e) => handleVenue(e)}
-          ></input>
-        </div>
+      {!isAdmin && (
+        <div style={{ display: "flex" }} className="row">
+          <div
+            className="form-outline"
+            style={{ width: "200px", marginLeft: "30px", marginBottom: "25px" }}
+          >
+            <input
+              className="form-control"
+              placeholder="Search by venue"
+              value={venueName}
+              onChange={(e) => handleVenue(e)}
+            ></input>
+          </div>
 
-        <div
-          className="form-outline"
-          style={{ width: "300px", marginLeft: "65px", marginBottom: "25px" }}
-        >
-          <input
-            class="form-control"
-            placeholder="Search by city"
-            value={cityName}
-            onChange={(e) => handleCity(e)}
-          ></input>
-        </div>
+          <div
+            className="form-outline"
+            style={{ width: "250px", marginLeft: "30px", marginBottom: "25px" }}
+          >
+            <input
+              className="form-control"
+              placeholder="Search by sport"
+              value={sportName}
+              onChange={(e) => handleSport(e)}
+            ></input>
+          </div>
 
-        <div
-          className="form-outline"
-          style={{ width: "300px", marginLeft: "60px", marginBottom: "25px" }}
-        >
-          <input
-            class="form-control"
-            placeholder="Search by state"
-            value={stateName}
-            onChange={(e) => handleState(e)}
-          ></input>
-        </div>
+          <div
+            className="form-outline"
+            style={{ width: "250px", marginLeft: "30px", marginBottom: "25px" }}
+          >
+            <input
+              className="form-control"
+              placeholder="Search by city"
+              value={cityName}
+              onChange={(e) => handleCity(e)}
+            ></input>
+          </div>
 
-        <div className="col-md-1">
-          <Button style={{ marginLeft: "52px" }} onClick={() => searchEvent()}>
-            Search
-          </Button>
+          <div
+            className="form-outline"
+            style={{ width: "250px", marginLeft: "30px", marginBottom: "25px" }}
+          >
+            <input
+              class="form-control"
+              placeholder="Search by state"
+              value={stateName}
+              onChange={(e) => handleState(e)}
+            ></input>
+          </div>
+
+          <div className="col-md-1">
+            <Button
+              style={{ marginLeft: "60px" }}
+              onClick={(e) => searchEvent()}
+            >
+              Search
+            </Button>
+          </div>
+          <div className="col-md-1">
+            <Button style={{ marginLeft: "40px" }} onClick={() => clearEvent()}>
+              Clear
+            </Button>
+          </div>
         </div>
-        <div className="col-md-1">
-          <Button style={{ marginLeft: "140px" }} onClick={() => clearEvent()}>
-            Clear
-          </Button>
-        </div>
-      </div>
+      )}
 
       <div
         style={{
@@ -211,6 +282,10 @@ function Events() {
                     <Card.Text>Occupied:{event.occupied}</Card.Text>
                     <Card.Text>Capacity:{event.capacity}</Card.Text>
 
+                    
+                    {/* <div onClick={()=>openMap(event.eventAddress)}>Map</div> */}
+
+
                     {!isAdmin && (
                       <Button
                         onClick={() => submitBookmark(event)}
@@ -228,11 +303,23 @@ function Events() {
                         DELETE
                       </Button>
                     )}
+                    {isAdmin && (
+                      <Button
+                        onClick={() => cancleEvent(event.eventID)}
+                        variant="primary"
+                        style={{marginLeft:"30px"}}
+                      >
+                        CANCLE 
+                      </Button>
+                    )}
                   </Card.Body>
+                  
                   {!isAdmin && (
                     <Button
                       onClick={() => submitReservation(event)}
                       variant="primary"
+                      disabled={(event.occupied >= event.capacity) } 
+                      // || (cancle)
                     >
                       BOOK
                     </Button>
@@ -241,6 +328,7 @@ function Events() {
               </Col>
             ))}
         </Row>
+        {/* {mapState && <MapComp address={address} mapState={mapState} />} */}
       </div>
       {/* <div> 
       <ChatEng />

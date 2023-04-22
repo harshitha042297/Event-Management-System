@@ -11,6 +11,11 @@ import { InstagramLoginButton } from "react-social-login-buttons";
 import { GoogleLoginButton } from "react-social-login-buttons";
 import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
+import Dropdown from "react-bootstrap/Dropdown";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import bForm from 'react-bootstrap/Form';
+
 const client_id =
   "299065018954-6o458210krpn4slslu8g10j6p1pbphcl.apps.googleusercontent.com";
 
@@ -20,6 +25,7 @@ const Login = () => {
   const [remember, setRemember] = useState(false);
   const [validate, setValidate] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [userType, setUserType] = useState("");
 
   const navigate = useHistory();
 
@@ -30,16 +36,10 @@ const Login = () => {
   const captchaRef = useRef(null);
 
   useEffect(() => {
-    axios
-      .get("https://se-event-management.azurewebsites.net/Home")
-      // .then((data) => data.json())
-      .then((response) => console.log(response, "api response"));
-  }, []);
-
-  useEffect(() => {
     function start() {
       gapi.auth2.init({
-        clientId: "299065018954-6o458210krpn4slslu8g10j6p1pbphcl.apps.googleusercontent.com",
+        clientId:
+          "299065018954-6o458210krpn4slslu8g10j6p1pbphcl.apps.googleusercontent.com",
         scope: "",
       });
     }
@@ -50,6 +50,10 @@ const Login = () => {
     let isValid = true;
 
     let validator = Form.validator({
+      userType: {
+        value: userType,
+        isRequired: true,
+      },
       email: {
         value: email,
         isRequired: true,
@@ -61,7 +65,7 @@ const Login = () => {
         minLength: 6,
       },
     });
-
+    console.log(validator,"validate")
     if (validator !== null) {
       setValidate({
         validate: validator.errors,
@@ -74,36 +78,37 @@ const Login = () => {
 
   const authenticate = (e) => {
     e.preventDefault();
+    console.log(userType, "yser type test");
 
     const validate = validateLogin();
+    
 
     if (validate) {
-      setValidate({});
-      setEmail("");
-      setPassword("");
-      // alert("Successfully Login");
-    }
+      console.log(userType,"user type")
     axios
       .post("https://se-event-management.azurewebsites.net/user/check", {
         Email: email,
         Password: password,
+        VenueOwner: userType=="admin"?true:false
       })
       // .then((data) => data)
       .then((response) => {
         sessionStorage.clear();
-        console.log(response, "api response post");
+
         if (response?.status === 200 && response?.data.email) {
           sessionStorage.setItem("userDetails", JSON.stringify(response.data));
           navigate.push("/Events");
         } else {
           alert("invalid credentials");
+          toast.error('Success Notification !', {
+            position: toast.POSITION.TOP_RIGHT
+        });
         }
       });
+    }
   };
 
-  const onRecaptchaChange = (value) => {
-    console.log(value, "value");
-  };
+  const onRecaptchaChange = (value) => {};
   // NEWLY ADDED
   //   const handleSubmit = async e => {
   //     e.preventDefault();
@@ -151,7 +156,6 @@ const Login = () => {
 
   //oAuth
   const onSuccess = (res) => {
-    console.log("login success", res.profileObj);
     axios
       .post("https://se-event-management.azurewebsites.net/user/check", {
         Email: email,
@@ -160,20 +164,23 @@ const Login = () => {
       // .then((data) => data)
       .then((response) => {
         sessionStorage.clear();
-        console.log(response, "api response post");
+
         if (response?.status === 200 && response?.data.email) {
           sessionStorage.setItem("userDetails", JSON.stringify(response.data));
           navigate.push("/Events");
-        } 
+        }
         // else {
         //   alert("Error");
         // }
       });
   };
   const onFailure = (res) => {
-    console.log("login fail", res);
+    // console.log("login fail", res);
   };
 
+  const userTypeFun = (e) => {
+    setUserType(e.target.value);
+  };
   //Oauth
 
   return (
@@ -192,6 +199,46 @@ const Login = () => {
                   autoComplete={"off"}
                 >
                   <div className="email mb-3">
+                    {/* <Dropdown value={userType} onChange = {(e)=>userTypeFun(e)} >
+                      <Dropdown.Toggle
+                        variant="success"
+                        id="dropdown-basic"
+                        style={{ backgroundColor: "#12203a", color: "white" }}
+                      >
+                        Admin/User
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu>
+                        <Dropdown.Item>Admin</Dropdown.Item>
+                        <Dropdown.Item>User</Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown> */}
+                    <div style={{marginBottom:"10px"}}>
+                      <bForm.Select
+                      
+                        onChange={(e) => userTypeFun(e)}
+                        name="userType"
+                        id="userType"
+                        style={{backgroundColor:"gainsboro"}}
+                      >
+                        <option value="">Admin/User</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                      </bForm.Select>
+
+                      <div
+                        className={`invalid-feedback text-start ${
+                          validate.validate && validate.validate.userType
+                            ? "d-block"
+                            : "d-none"
+                        }`}
+                      >
+                        {validate.validate && validate.validate.userType
+                          ? validate.validate.userType[0]
+                          : ""}
+                      </div>
+                    </div>
+
                     <input
                       type="email"
                       className={`form-control ${

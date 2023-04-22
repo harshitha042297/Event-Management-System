@@ -80,7 +80,7 @@ function UploadActivity() {
   return (
   <div>
   <EventsNavbar isAdmin={venueOwner} />
-<div style={{ maxWidth: "700px", margin: "2rem auto" }}>
+<div style={{ maxWidth: "700px", margin: "2rem auto" ,backgroundColor:"ghostwhite" }}>
   <div style={{ textAlign: "center", marginBottom: "2rem" }}>
     <h2 level={2} className="text-center mt-5 mb-5">
       Upload Activity

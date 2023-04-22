@@ -97,7 +97,7 @@ function UploadProduct(props) {
         </h2>
       </div>
 
-      <form onSubmit={onSubmit} className="mt-5 mb-5">
+      <form onSubmit={onSubmit} className="mt-5 mb-5" style={{backgroundColor:"ghostwhite" }}>
         {/* DropZone */}
 
         <label>Event Name</label>

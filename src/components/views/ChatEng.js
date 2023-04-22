@@ -7,7 +7,8 @@ import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function ChatEng() {
-  const [username, setUsername] = useState("");
+  let [username, setUsername] = useState("");
+  // username = JSON.parse(sessionStorage.getItem("userDetails")).userName;
 
   function createDirectChat(creds) {
     // console.log(creds)
@@ -41,7 +42,7 @@ function ChatEng() {
       <br></br>
       <br></br>
       <ChatEngine
-        projectID="b6a27fd8-49e1-4c22-be2b-aef85de187c3"
+        projectID="24cbc432-a707-484f-8e78-d7f2e86dd727"
         userName="acirgir"
         userSecret="admin@123"
         renderNewChatForm={(creds) => renderChatForm(creds)}

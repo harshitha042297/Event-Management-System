@@ -15,6 +15,7 @@ import Players from "./components/views/Players";
 import Activity from "./components/views/Activity";
 import AdminReservations from "./components/views/AdminReservations";
 import ChatEng from "./components/views/ChatEng";
+import MapComp from "./components/views/MapComp";
 
 // import ChatEng from "./components/views/ChatEng";
 
@@ -36,7 +37,8 @@ const Auth = () => {
         <Route path="/Players" component={Players} /> 
         <Route path="/Activity" component={Activity} /> 
         <Route path="/AdminReservations" component={AdminReservations} /> 
-        <Route path="/Chat" component={ChatEng} /> 
+        <Route path="/Chat" component={ChatEng} />
+        <Route path="/MapComp" component={MapComp} />
         <Route path="/" component={landing} /> 
       </Switch>
     </Router>

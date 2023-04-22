@@ -126,27 +126,30 @@ function Reservations() {
 
   return (
     <>
-      <EventsNavbar isAdmin={isAdmin} />
+      <EventsNavbar isAdmin={!isAdmin} />
       <div>
         <div className="col-md-12" style={{ height: "900px" }}>
-          <h4>Reservations</h4>
-          <div style={{ width: "1000px", height: "10px" }}>
+          <h3 style={{paddingLeft: "110px", marginTop:"30px"}}>Event and Activity reservations</h3>
+          <div style={{ width: "1000px", height: "10px" , paddingLeft: "110px"}}>
             <FullCalendar
               plugins={[dayGridPlugin]}
               initialView="dayGridMonth"
               events={bookingDetails}
+              style={{backgroundColor:"ghostwhite"}}
             />
           </div>
         </div>
-
+        {!isAdmin &&
         <div className="col-md-12">
-          <h4 style={{paddingLeft: "130px"}}>Past Reservations</h4>
+          <h3 style={{paddingLeft: "110px"}}>Past Event Reservations</h3>
           <div
             style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              paddingLeft: "50px",
+              paddingLeft: "100px",
+              paddingRight: "100px",
+              marginBottom: "40px"
             }}
           >
             <Row xs={4} md={4}>
@@ -155,7 +158,7 @@ function Reservations() {
                   <Col style={{ marginBottom: "32px" }}>
                     <Card key={event.eventID} style={{ width: "18rem" }}>
                       <Card.Body
-                        style={{ maxHeight: "400px", overflowY: "scroll" }}
+                        style={{ maxHeight: "400px", overflowY: "scroll",backgroundColor:"ghostwhite" }}
                       >
                         <Card.Title>{event.eventName}</Card.Title>
                         <Card.Text>{event.eventDescription}</Card.Text>
@@ -198,6 +201,70 @@ function Reservations() {
             </Row>
           </div>
         </div>
+}
+{!isAdmin &&
+        <div className="col-md-12">
+          <h3 style={{paddingLeft: "110px"}}>Activity Reservations</h3>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingLeft: "100px",
+              paddingRight: "100px",
+              marginBottom: "40px"
+            }}
+          >
+            <Row xs={4} md={4}>
+              {oldBookingDetails.length &&
+                oldBookingDetails.map((event) => (
+                  <Col style={{ marginBottom: "32px" }}>
+                    <Card key={event.eventID} style={{ width: "18rem" }}>
+                      <Card.Body
+                        style={{ maxHeight: "400px", overflowY: "scroll",backgroundColor:"ghostwhite" }}
+                      >
+                        <Card.Title>{event.eventName}</Card.Title>
+                        <Card.Text>{event.eventDescription}</Card.Text>
+                        <Card.Text> City:{event.eventCity} </Card.Text>
+                        <Card.Text>State: {event.eventState}</Card.Text>
+                        <Card.Text>Address:{event.eventAddress}</Card.Text>
+
+                        <form onSubmit={onSubmit} className="mt-5 mb-5">
+                          <label>Review</label>
+                          <input
+                            id={event.eventID}
+                            className="form-control"
+                            // onChange={onReviewChange(event.eventID)}
+                            onChange={(e) =>
+                              onReviewChange(e, event)
+                            }
+                            // value={Review}
+                            type="text"
+                          />
+                          <br></br>
+                          <label>Rating</label>
+                          <input
+                            id={event.eventID}
+                            className="form-control"
+                            onChange={(e) =>
+                              onRatingChange(e, event)
+                            }
+                            // value={Rating}
+                            type="number"
+                          />
+                          <br></br>
+                        </form>
+                      </Card.Body>
+                      <Button onClick={() => onSubmit(event)} variant="primary">
+                        Post Review
+                      </Button>
+                    </Card>
+                  </Col>
+                ))}
+            </Row>
+          </div>
+        </div>
+}
       </div>
     </>
   );

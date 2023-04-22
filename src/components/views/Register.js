@@ -5,6 +5,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 import userEvent from "@testing-library/user-event";
 import { useNavigate } from "react-router";
+import bForm from 'react-bootstrap/Form';
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -16,6 +17,8 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [UserDescription, setUserDescription] = useState("");
   const [Age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [venueOwner, setVenueOwner] = useState(false);
 
   const navigate = useHistory();
 
@@ -64,14 +67,6 @@ const Register = () => {
 
     if (validate) {
       setValidate({});
-      setName("");
-      setLastName("");
-      setUsername("");
-      setEmail("");
-      setPassword("");
-      setAge("");
-      setUserDescription("");
-      alert("Successfully Register User");
     }
 
     axios
@@ -83,13 +78,16 @@ const Register = () => {
         UserName: username,
         Age: Age,
         UserDescription: UserDescription,
+        Gender: gender,
+        Venue_Owner: venueOwner=="admin"?true:false
       })
       // .then((data) => data)
       .then((response) => {
+        console.log(email,password, Age, UserDescription,venueOwner,lastname,username)
         console.log(response, "api response post");
-        // if (response?.status === 200 && response?.data) {
-        //   navigate.push("/landing");
-        // }
+        if (response?.status === 200 && response?.data) {
+          navigate.push("/landing");
+        }
       });
   };
 
@@ -99,6 +97,10 @@ const Register = () => {
     } else {
       setShowPassword(true);
     }
+  };
+
+  const venueOwnerfunc = (e) => {
+    setVenueOwner(e.target.value);
   };
 
   return (
@@ -120,6 +122,18 @@ const Register = () => {
                 autoComplete={"off"}
               >
                 <div className="name mb-3">
+                <div style={{marginBottom:"10px"}}>
+                      <bForm.Select
+                        onChange={(e) => venueOwnerfunc(e)}
+                        name="venueOwner"
+                        id="venueOwner"
+                        style={{backgroundColor:"gainsboro"}}
+                      >
+                        <option value="">Admin/User</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                      </bForm.Select>
+                      </div>
                   <input
                     type="text"
                     className={`form-control ${
@@ -187,7 +201,18 @@ const Register = () => {
                       ? validate.validate.name[0]
                       : ""}
                   </div>
-
+                  <div>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="gender"
+                        name="gender"
+                        value={gender}
+                        placeholder="Gender"
+                        onChange={(e) => setGender(e.target.value)}
+                      />
+                    </div>
+                    <br></br>
                   <div>
                       <input
                         type="text"
@@ -196,7 +221,7 @@ const Register = () => {
                         name="Age"
                         value={Age}
                         placeholder="Enter your age"
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setAge(e.target.value)}
                       />
                       <br></br>
                     </div>
@@ -209,9 +234,11 @@ const Register = () => {
                         name="UserDescription"
                         value={UserDescription}
                         placeholder="Brief description about your interests"
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setUserDescription(e.target.value)}
                       />
                     </div>
+
+                   
 
                 </div>
 
