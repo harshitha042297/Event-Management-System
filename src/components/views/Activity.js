@@ -10,6 +10,7 @@ import Row from "react-bootstrap/Row";
 function Activity() {
   const [Activity, setActivity] = useState([]);
   const isAdmin = JSON.parse(sessionStorage.getItem("userDetails")).venue_Owner;
+  const details = JSON.parse(sessionStorage.getItem("userDetails"));
 
   const [copyEvents, setCopyEvents] = useState([]);
   const [venueName, setVenueName] = useState("");
@@ -66,20 +67,22 @@ function Activity() {
   };
 
   const bookActivity=(event)=>{
-    // axios
-    // .post("https://se-event-management.azurewebsites.net/booking/bookevent", {
-    //   userID: details.userID,
-    //   Email: details.email,
-    //   FirstName: details.firstName,
-    //   EventID: event.eventID,
-    // })
+    axios
+    .post("https://se-event-management.azurewebsites.net/Activity/bookactivity", {
+      userID: details.userID,
+      email: details.email,
+      firstName: details.firstName,
+      eventID: event.activityID,
+      bookingTime: event.activityStart
+    })
 
-    // .then((response) => {
-    //   if (response?.status === 200) {
-    //     alert("Successfull booking");
-    //   }
-    // });
-    alert("test")
+    .then((response) => {
+      if (response?.status === 200) {
+        console.log(response)
+        alert("Successfull booking");
+      }
+    });
+    
   }
 
   return (

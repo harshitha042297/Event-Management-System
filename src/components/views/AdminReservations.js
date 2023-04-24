@@ -83,10 +83,11 @@ function AdminReservations() {
                     <Card.Text>State: {event.eventState}</Card.Text>
                     <Card.Text>Address:{event.eventAddress}</Card.Text>
 
-                    <Button onClick={() => handleShow(event.eventID)}>
+                    
+                  </Card.Body>
+                  <Button onClick={() => handleShow(event.eventID)}>
                       List of users
                     </Button>
-                  </Card.Body>
                 </Card>
               </Col>
             ))}

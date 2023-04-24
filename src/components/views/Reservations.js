@@ -14,6 +14,7 @@ import Row from "react-bootstrap/Row";
 function Reservations() {
   const [bookingDetails, setbookingDetails] = useState([]);
   const [oldBookingDetails, setOldBooking] = useState([]);
+  const [activityDetails,setActivityDetails]=useState([]);
   const details = JSON.parse(sessionStorage.getItem("userDetails"));
   const userID = JSON.parse(sessionStorage.getItem("userDetails")).userID;
   const isAdmin = JSON.parse(sessionStorage.getItem("userDetails")).venue_Owner;
@@ -23,41 +24,37 @@ function Reservations() {
   const [tempID, setTempID] = useState(null);
 
   const onReviewChange = (val, event) => {
-    
     if (formData.length > 0) {
       setTempID(event.eventID);
-     
-      const objIndex = formData.findIndex((obj) => obj.eventID == event.eventID);
-      console.log(objIndex,event.eventID,val)
-        if (
-          val &&
-          val.target &&
-          val.target.value 
-          
-        ) {
-          formData[objIndex].Review = val.target.value;
-        }
+
+      const objIndex = formData.findIndex(
+        (obj) => obj.eventID == event.eventID
+      );
+      console.log(objIndex, event.eventID, val);
+      if (val && val.target && val.target.value) {
+        formData[objIndex].Review = val.target.value;
+      }
     }
   };
   const onRatingChange = (val, event) => {
     if (formData.length > 0) {
       setTempID(event.eventID);
-     
-      const objIndex = formData.findIndex((obj) => obj.eventID == event.eventID);
-      console.log(objIndex,event.eventID,val)
-        if (
-          val &&
-          val.target &&
-          val.target.value 
-          
-        ) {
-          formData[objIndex].Rating = val.target.value;
-        }
-    }  };
+
+      const objIndex = formData.findIndex(
+        (obj) => obj.eventID == event.eventID
+      );
+      console.log(objIndex, event.eventID, val);
+      if (val && val.target && val.target.value) {
+        formData[objIndex].Rating = val.target.value;
+      }
+    }
+  };
   const variables = {
     userId: userID,
   };
-
+  const variables2 = {
+    userID: userID
+  };
   useEffect(() => {
     axios
       .post(
@@ -87,8 +84,19 @@ function Reservations() {
       )
       .then((response) => {
         setOldBooking(response?.data);
-
         console.log(response, "old booking details");
+      });
+  }, []);
+
+  useEffect(() => {
+    axios
+      .post(
+        "https://se-event-management.azurewebsites.net/Activity/userbookings",
+        variables2
+      )
+      .then((response) => {
+        setActivityDetails(response?.data);
+        console.log(response, "activity details");
       });
   }, []);
 
@@ -113,7 +121,7 @@ function Reservations() {
         EventID: event.eventID,
         VenueOwnerID: "1",
         Ratingvalue: formData[objIndex].Rating,
-        Review: formData[objIndex].Review
+        Review: formData[objIndex].Review,
       })
 
       .then((response) => {
@@ -129,142 +137,124 @@ function Reservations() {
       <EventsNavbar isAdmin={!isAdmin} />
       <div>
         <div className="col-md-12" style={{ height: "900px" }}>
-          <h3 style={{paddingLeft: "110px", marginTop:"30px"}}>Event and Activity reservations</h3>
-          <div style={{ width: "1000px", height: "10px" , paddingLeft: "110px"}}>
+          <h3 style={{ paddingLeft: "110px", marginTop: "30px" }}>
+            Event and Activity reservations
+          </h3>
+          <div
+            style={{ width: "1000px", height: "10px", paddingLeft: "110px" }}
+          >
             <FullCalendar
               plugins={[dayGridPlugin]}
               initialView="dayGridMonth"
               events={bookingDetails}
-              style={{backgroundColor:"ghostwhite"}}
+              style={{ backgroundColor: "ghostwhite" }}
             />
           </div>
         </div>
-        {!isAdmin &&
-        <div className="col-md-12">
-          <h3 style={{paddingLeft: "110px"}}>Past Event Reservations</h3>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              paddingLeft: "100px",
-              paddingRight: "100px",
-              marginBottom: "40px"
-            }}
-          >
-            <Row xs={4} md={4}>
-              {oldBookingDetails.length &&
-                oldBookingDetails.map((event) => (
-                  <Col style={{ marginBottom: "32px" }}>
-                    <Card key={event.eventID} style={{ width: "18rem" }}>
-                      <Card.Body
-                        style={{ maxHeight: "400px", overflowY: "scroll",backgroundColor:"ghostwhite" }}
-                      >
-                        <Card.Title>{event.eventName}</Card.Title>
-                        <Card.Text>{event.eventDescription}</Card.Text>
-                        <Card.Text> City:{event.eventCity} </Card.Text>
-                        <Card.Text>State: {event.eventState}</Card.Text>
-                        <Card.Text>Address:{event.eventAddress}</Card.Text>
+        {!isAdmin && (
+          <div className="col-md-12">
+            <h3 style={{ paddingLeft: "110px" }}>Past Event Reservations</h3>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: "100px",
+                paddingRight: "100px",
+                marginBottom: "40px",
+              }}
+            >
+              <Row xs={4} md={4}>
+                {oldBookingDetails.length &&
+                  oldBookingDetails.map((event) => (
+                    <Col style={{ marginBottom: "32px" }}>
+                      <Card key={event.eventID} style={{ width: "18rem" }}>
+                        <Card.Body
+                          style={{
+                            maxHeight: "400px",
+                            overflowY: "scroll",
+                            backgroundColor: "ghostwhite",
+                          }}
+                        >
+                          <Card.Title>{event.eventName}</Card.Title>
+                          <Card.Text>{event.eventDescription}</Card.Text>
+                          <Card.Text> City:{event.eventCity} </Card.Text>
+                          <Card.Text>State: {event.eventState}</Card.Text>
+                          <Card.Text>Address:{event.eventAddress}</Card.Text>
 
-                        <form onSubmit={onSubmit} className="mt-5 mb-5">
-                          <label>Review</label>
-                          <input
-                            id={event.eventID}
-                            className="form-control"
-                            // onChange={onReviewChange(event.eventID)}
-                            onChange={(e) =>
-                              onReviewChange(e, event)
-                            }
-                            // value={Review}
-                            type="text"
-                          />
-                          <br></br>
-                          <label>Rating</label>
-                          <input
-                            id={event.eventID}
-                            className="form-control"
-                            onChange={(e) =>
-                              onRatingChange(e, event)
-                            }
-                            // value={Rating}
-                            type="number"
-                          />
-                          <br></br>
-                        </form>
-                      </Card.Body>
-                      <Button onClick={() => onSubmit(event)} variant="primary">
-                        Post Review
-                      </Button>
-                    </Card>
-                  </Col>
-                ))}
-            </Row>
+                          <form onSubmit={onSubmit} className="mt-5 mb-5">
+                            <label>Review</label>
+                            <input
+                              id={event.eventID}
+                              className="form-control"
+                              // onChange={onReviewChange(event.eventID)}
+                              onChange={(e) => onReviewChange(e, event)}
+                              // value={Review}
+                              type="text"
+                            />
+                            <br></br>
+                            <label>Rating</label>
+                            <input
+                              id={event.eventID}
+                              className="form-control"
+                              onChange={(e) => onRatingChange(e, event)}
+                              // value={Rating}
+                              type="number"
+                            />
+                            <br></br>
+                          </form>
+                        </Card.Body>
+                        <Button
+                          onClick={() => onSubmit(event)}
+                          variant="primary"
+                        >
+                          Post Review
+                        </Button>
+                      </Card>
+                    </Col>
+                  ))}
+              </Row>
+            </div>
           </div>
-        </div>
-}
-{!isAdmin &&
-        <div className="col-md-12">
-          <h3 style={{paddingLeft: "110px"}}>Activity Reservations</h3>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              paddingLeft: "100px",
-              paddingRight: "100px",
-              marginBottom: "40px"
-            }}
-          >
-            <Row xs={4} md={4}>
-              {oldBookingDetails.length &&
-                oldBookingDetails.map((event) => (
-                  <Col style={{ marginBottom: "32px" }}>
-                    <Card key={event.eventID} style={{ width: "18rem" }}>
-                      <Card.Body
-                        style={{ maxHeight: "400px", overflowY: "scroll",backgroundColor:"ghostwhite" }}
-                      >
-                        <Card.Title>{event.eventName}</Card.Title>
-                        <Card.Text>{event.eventDescription}</Card.Text>
-                        <Card.Text> City:{event.eventCity} </Card.Text>
-                        <Card.Text>State: {event.eventState}</Card.Text>
-                        <Card.Text>Address:{event.eventAddress}</Card.Text>
-
-                        <form onSubmit={onSubmit} className="mt-5 mb-5">
-                          <label>Review</label>
-                          <input
-                            id={event.eventID}
-                            className="form-control"
-                            // onChange={onReviewChange(event.eventID)}
-                            onChange={(e) =>
-                              onReviewChange(e, event)
-                            }
-                            // value={Review}
-                            type="text"
-                          />
-                          <br></br>
-                          <label>Rating</label>
-                          <input
-                            id={event.eventID}
-                            className="form-control"
-                            onChange={(e) =>
-                              onRatingChange(e, event)
-                            }
-                            // value={Rating}
-                            type="number"
-                          />
-                          <br></br>
-                        </form>
-                      </Card.Body>
-                      <Button onClick={() => onSubmit(event)} variant="primary">
-                        Post Review
-                      </Button>
-                    </Card>
-                  </Col>
-                ))}
-            </Row>
+        )}
+        {!isAdmin && (
+          <div className="col-md-12">
+            <h3 style={{ paddingLeft: "110px" }}>Activity Reservations</h3>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: "100px",
+                paddingRight: "100px",
+                marginBottom: "40px",
+              }}
+            >
+              <Row xs={4} md={4}>
+                {activityDetails.length &&
+                  activityDetails.map((event) => (
+                    <Col style={{ marginBottom: "32px" }}>
+                      <Card key={event.eventID} style={{ width: "18rem" }}>
+                        <Card.Body
+                          style={{
+                            maxHeight: "400px",
+                            overflowY: "scroll",
+                            backgroundColor: "ghostwhite",
+                          }}
+                        >
+                          <Card.Title>{event.activityName}</Card.Title>
+                          <Card.Text>{event.activityDescription}</Card.Text>
+                          <Card.Text> City:{event.activityCity} </Card.Text>
+                          <Card.Text>State: {event.activityState}</Card.Text>
+                          <Card.Text>Address:{event.activityAddress}</Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ))}
+              </Row>
+            </div>
           </div>
-        </div>
-}
+        )}
       </div>
     </>
   );
