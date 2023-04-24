@@ -276,9 +276,11 @@ function Events() {
                   >
                     <Card.Title>{event.eventName}</Card.Title>
                     <Card.Text>{event.eventDescription}</Card.Text>
+                    <Card.Text>Address:{event.eventAddress}</Card.Text>
                     <Card.Text> City:{event.eventCity} </Card.Text>
                     <Card.Text>State: {event.eventState}</Card.Text>
-                    <Card.Text>Address:{event.eventAddress}</Card.Text>
+                    <Card.Text>Start Time: {event.eventStart}</Card.Text>
+                    <Card.Text>End Time: {event.eventEnd}</Card.Text>
                     <Card.Text>Occupied:{event.occupied}</Card.Text>
                     <Card.Text>Capacity:{event.capacity}</Card.Text>
 
